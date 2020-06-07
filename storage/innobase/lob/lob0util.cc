@@ -69,7 +69,7 @@ buf_block_t *alloc_lob_page(dict_index_t *index, mtr_t *lob_mtr, page_no_t hint,
   if (!success) {
     if (bulk) {
       ut_ad(alloc_mtr == &mtr_bulk);
-      alloc_mtr->commit();
+      alloc_mtr->commit(__func__, __FILE__, __LINE__);
     }
     return (nullptr);
   }
@@ -80,7 +80,7 @@ buf_block_t *alloc_lob_page(dict_index_t *index, mtr_t *lob_mtr, page_no_t hint,
 
   if (bulk) {
     ut_ad(alloc_mtr == &mtr_bulk);
-    alloc_mtr->commit();
+    alloc_mtr->commit(__func__, __FILE__, __LINE__);
   }
 
   return (block);

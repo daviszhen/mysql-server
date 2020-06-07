@@ -1317,7 +1317,7 @@ int dd_upgrade_logs(THD *thd) {
   DBUG_TRACE;
 
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   dict_hdr_t *dict_hdr = dict_hdr_get(&mtr);
   table_id_t table_id = mach_read_from_8(dict_hdr + DICT_HDR_TABLE_ID);
 
@@ -1329,7 +1329,7 @@ int dd_upgrade_logs(THD *thd) {
   /* Increase the offset of table_id by DICT_MAX_DD_TABLES */
   mlog_write_ull(dict_hdr + DICT_HDR_TABLE_ID, table_id + DICT_MAX_DD_TABLES,
                  &mtr);
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   log_buffer_flush_to_disk();
 

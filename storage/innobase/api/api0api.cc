@@ -3206,10 +3206,10 @@ ib_err_t ib_sdi_create(space_id_t tablespace_id) {
   const page_size_t page_size(space->flags);
   mtr_t mtr;
 
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   const fsp_header_t *header =
       fsp_get_space_header(tablespace_id, page_size, &mtr);
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
   ut_ad(mach_read_from_4(FSP_SPACE_FLAGS + header) == space->flags);
 #endif /* UNIV_DEBUG */
 
@@ -3242,19 +3242,19 @@ ib_err_t ib_sdi_drop(space_id_t tablespace_id) {
 
   /* We use separate mtrs because latching IBUF BITMAP Page and
   a B-Tree Index page in same mtr will cause latch violation */
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   page_no_t root_page_num =
       fsp_sdi_get_root_page_num(tablespace_id, page_size, &mtr);
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   btr_free_if_exists(page_id_t(tablespace_id, root_page_num), page_size,
                      dict_sdi_get_index_id(), &mtr);
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   /* Remove SDI Flag presence from Page 0 */
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   uint32_t flags = space->flags & ~FSP_FLAGS_MASK_SDI;
 
@@ -3269,7 +3269,7 @@ ib_err_t ib_sdi_drop(space_id_t tablespace_id) {
 
   fil_space_set_flags(space, flags);
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
   rw_lock_x_unlock(&space->latch);
   fil_space_release(space);
 

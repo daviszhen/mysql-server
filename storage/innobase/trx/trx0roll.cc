@@ -212,7 +212,7 @@ static dberr_t trx_rollback_low(trx_t *trx) {
 
         mtr_t mtr;
 
-        mtr.start();
+        mtr.start(__func__, __FILE__, __LINE__);
 
         mutex_enter(&trx->rsegs.m_redo.rseg->mutex);
 
@@ -229,7 +229,7 @@ static dberr_t trx_rollback_low(trx_t *trx) {
         /* Persist the XA ROLLBACK, so that crash
         recovery will replay the rollback in case
         the redo log gets applied past this point. */
-        mtr.commit();
+        mtr.commit(__func__, __FILE__, __LINE__);
         ut_ad(mtr.commit_lsn() > 0);
       }
 #ifdef ENABLED_DEBUG_SYNC

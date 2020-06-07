@@ -275,7 +275,7 @@ dberr_t Histogram_sampler::process_non_leaf_rec(const Parallel_reader::Ctx *ctx,
   srv_stats.n_sampled_pages_read.inc();
 
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   mtr.set_log_mode(MTR_LOG_NO_REDO);
 
   const dict_index_t *index = ctx->index();
@@ -317,7 +317,7 @@ dberr_t Histogram_sampler::process_non_leaf_rec(const Parallel_reader::Ctx *ctx,
     }
   }
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   return (m_err);
 }

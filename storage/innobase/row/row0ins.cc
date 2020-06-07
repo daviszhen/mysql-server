@@ -2357,18 +2357,18 @@ and return. don't execute actual insert. */
 
 #ifdef UNIV_DEBUG
   mtr_t temp_mtr;
-  temp_mtr.start();
+  temp_mtr.start(__func__, __FILE__, __LINE__);
   mtr_s_lock(dict_index_get_lock(index), &temp_mtr);
 
   if (btr_height_get(index, &temp_mtr) >= BTR_MAX_NODE_LEVEL &&
       btr_cur_limit_optimistic_insert_debug > 1 &&
       btr_cur_limit_optimistic_insert_debug < 5) {
     ib::error(ER_IB_MSG_BTREE_LEVEL_LIMIT_EXCEEDED, index->name());
-    temp_mtr.commit();
+    temp_mtr.commit(__func__, __FILE__, __LINE__);
     return (DB_BTREE_LEVEL_LIMIT_EXCEEDED);
   }
 
-  temp_mtr.commit();
+  temp_mtr.commit(__func__, __FILE__, __LINE__);
 #endif
 
   ut_ad(index->is_clustered());
@@ -2379,7 +2379,7 @@ and return. don't execute actual insert. */
         !thr_get_trx(thr)->in_rollback);
   ut_ad(thr != NULL || !dup_chk_only);
 
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   if (index->table->is_temporary()) {
     /* Disable REDO logging as the lifetime of temp-tables is
@@ -2469,13 +2469,13 @@ and return. don't execute actual insert. */
 
     if (err != DB_SUCCESS) {
     err_exit:
-      mtr.commit();
+      mtr.commit(__func__, __FILE__, __LINE__);
       goto func_exit;
     }
   }
 
   if (dup_chk_only) {
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
     goto func_exit;
   }
   /* Note: Allowing duplicates would qualify for modification of
@@ -2504,7 +2504,7 @@ and return. don't execute actual insert. */
       row_log_table_insert(btr_cur_get_rec(cursor), entry, index, offsets);
     }
 
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
     mem_heap_free(entry_heap);
   } else {
     rec_t *insert_rec;
@@ -2538,7 +2538,7 @@ and return. don't execute actual insert. */
     }
 
     if (big_rec != NULL) {
-      mtr.commit();
+      mtr.commit(__func__, __FILE__, __LINE__);
 
       /* Online table rebuild could read (and
       ignore) the incomplete record at this point.
@@ -2556,7 +2556,7 @@ and return. don't execute actual insert. */
         row_log_table_insert(insert_rec, entry, index, offsets);
       }
 
-      mtr.commit();
+      mtr.commit(__func__, __FILE__, __LINE__);
     }
   }
 

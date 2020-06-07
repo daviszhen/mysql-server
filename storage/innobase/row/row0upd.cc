@@ -2833,7 +2833,7 @@ static MY_ATTRIBUTE((warn_unused_result)) dberr_t row_upd_clust_rec(
     goto success;
   }
 
-  mtr->commit();
+  mtr->commit(__func__, __FILE__, __LINE__);
 
   if (buf_LRU_buf_pool_running_out()) {
     err = DB_LOCK_TABLE_FULL;
@@ -2842,7 +2842,7 @@ static MY_ATTRIBUTE((warn_unused_result)) dberr_t row_upd_clust_rec(
   /* We may have to modify the tree structure: do a pessimistic descent
   down the index tree */
 
-  mtr->start();
+  mtr->start(__func__, __FILE__, __LINE__);
 
   /* Disable REDO logging as lifetime of temp-tables is limited to
   server or connection lifetime and so REDO information is not needed
@@ -2901,7 +2901,7 @@ static MY_ATTRIBUTE((warn_unused_result)) dberr_t row_upd_clust_rec(
     }
   }
 
-  mtr->commit();
+  mtr->commit(__func__, __FILE__, __LINE__);
 
 func_exit:
   if (heap) {

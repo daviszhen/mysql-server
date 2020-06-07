@@ -314,13 +314,13 @@ undo tablespace.
 @return page_no Page number of the rollback segment header page */
 page_no_t trx_rseg_get_page_no(space_id_t space_id, ulint rseg_id) {
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   trx_rsegsf_t *rsegs_header = trx_rsegsf_get(space_id, &mtr);
 
   page_no_t page_no = trx_rsegsf_get_page_no(rsegs_header, rseg_id, &mtr);
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   return (page_no);
 }
@@ -346,18 +346,18 @@ void trx_rsegs_init(purge_pq_t *purge_queue) {
   trx_rseg_t *rseg = nullptr;
 
   /* Get GTID transaction number from SYS */
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   trx_sysf_t *sys_header = trx_sysf_get(&mtr);
   auto page = sys_header - TRX_SYS;
   auto gtid_trx_no = mach_read_from_8(page + TRX_SYS_TRX_NUM_GTID);
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   auto &gtid_persistor = clone_sys->get_gtid_persistor();
   gtid_persistor.set_oldest_trx_no_recovery(gtid_trx_no);
 
   for (slot = 0; slot < TRX_SYS_N_RSEGS; slot++) {
-    mtr.start();
+    mtr.start(__func__, __FILE__, __LINE__);
     trx_sysf_t *sys_header = trx_sysf_get(&mtr);
 
     page_no = trx_sysf_rseg_get_page_no(sys_header, slot, &mtr);
@@ -377,7 +377,7 @@ void trx_rsegs_init(purge_pq_t *purge_queue) {
         trx_sys->rsegs.push_back(rseg);
       }
     }
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
   }
 
   undo::spaces->s_lock();
@@ -398,7 +398,7 @@ void trx_rsegs_init(purge_pq_t *purge_queue) {
         break;
       }
 
-      mtr.start();
+      mtr.start(__func__, __FILE__, __LINE__);
 
       /* Create the trx_rseg_t object.
       Note that all tablespaces with rollback segments
@@ -411,7 +411,7 @@ void trx_rsegs_init(purge_pq_t *purge_queue) {
 
       undo_space->rsegs()->push_back(rseg);
 
-      mtr.commit();
+      mtr.commit(__func__, __FILE__, __LINE__);
     }
     undo_space->rsegs()->x_unlock();
 
@@ -603,7 +603,7 @@ bool trx_rseg_add_rollback_segments(space_id_t space_id, ulong target_rsegs,
     }
 
     /* Create the trx_rseg_t object. */
-    mtr.start();
+    mtr.start(__func__, __FILE__, __LINE__);
 
     fil_space_t *space = fil_space_get(space_id);
     ut_ad(univ_page_size.equals_to(page_size_t(space->flags)));
@@ -616,7 +616,7 @@ bool trx_rseg_add_rollback_segments(space_id_t space_id, ulong target_rsegs,
     rseg = trx_rseg_mem_create(rseg_id, space_id, page_no, univ_page_size, 0,
                                purge_sys->purge_queue, &mtr);
 
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
 
     if (rseg != nullptr) {
       ut_a(rseg->id == rseg_id);

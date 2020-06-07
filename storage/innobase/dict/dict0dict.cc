@@ -4048,9 +4048,9 @@ void dict_set_corrupted(dict_index_t *index) {
 #ifndef UNIV_HOTBACKUP
     mtr_t mtr;
 
-    mtr.start();
+    mtr.start(__func__, __FILE__, __LINE__);
     persister->write_log(table->id, metadata, &mtr);
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
 
     /* Make sure the corruption bit won't be lost */
     log_write_up_to(*log_sys, mtr.commit_lsn(), true);
@@ -5224,7 +5224,7 @@ dberr_t DDTableBuffer::replace(table_id_t id, uint64_t version,
   entry = row_build_index_entry(m_replace_tuple, NULL, m_index, m_replace_heap);
 
   /* Start to search for the to-be-replaced tuple */
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   btr_pcur_open(m_index, m_search_tuple, PAGE_CUR_LE, BTR_MODIFY_TREE, &pcur,
                 &mtr);
@@ -5236,7 +5236,7 @@ dberr_t DDTableBuffer::replace(table_id_t id, uint64_t version,
     static const ulint flags = (BTR_CREATE_FLAG | BTR_NO_LOCKING_FLAG |
                                 BTR_NO_UNDO_LOG_FLAG | BTR_KEEP_SYS_FLAG);
 
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
 
     error =
         row_ins_clust_index_entry_low(flags, BTR_MODIFY_TREE, m_index,
@@ -5269,7 +5269,7 @@ dberr_t DDTableBuffer::replace(table_id_t id, uint64_t version,
     ut_ad(!big_rec);
   }
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
   mem_heap_empty(m_dynamic_heap);
   mem_heap_empty(m_replace_heap);
 
@@ -5288,7 +5288,7 @@ dberr_t DDTableBuffer::remove(table_id_t id) {
 
   init_tuple_with_id(m_search_tuple, id);
 
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   btr_pcur_open(m_index, m_search_tuple, PAGE_CUR_LE,
                 BTR_MODIFY_TREE | BTR_LATCH_FOR_DELETE, &pcur, &mtr);
@@ -5302,7 +5302,7 @@ dberr_t DDTableBuffer::remove(table_id_t id) {
     ut_ad(error == DB_SUCCESS);
   }
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   return (DB_SUCCESS);
 }
@@ -5331,7 +5331,7 @@ std::string *DDTableBuffer::get(table_id_t id, uint64 *version) {
 
   init_tuple_with_id(m_search_tuple, id);
 
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   btr_cur_search_to_nth_level(m_index, 0, m_search_tuple, PAGE_CUR_LE,
                               BTR_SEARCH_LEAF, &cursor, 0, __FILE__, __LINE__,
@@ -5361,7 +5361,7 @@ std::string *DDTableBuffer::get(table_id_t id, uint64 *version) {
   std::string *metadata =
       UT_NEW_NOKEY(std::string(reinterpret_cast<const char *>(field), len));
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   return (metadata);
 }

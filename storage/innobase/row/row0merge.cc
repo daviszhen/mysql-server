@@ -153,7 +153,7 @@ class index_tuple_info_t {
         force_log_free_check = false;
       }
 
-      mtr.start();
+      mtr.start(__func__, __FILE__, __LINE__);
 
       ins_cur.index = m_index;
       rtr_init_rtr_info(&rtr_info, false, &ins_cur, m_index, false);
@@ -184,9 +184,9 @@ class index_tuple_info_t {
       if (error == DB_FAIL) {
         ut_ad(!big_rec);
 
-        mtr.commit();
+        mtr.commit(__func__, __FILE__, __LINE__);
 
-        mtr.start();
+        mtr.start(__func__, __FILE__, __LINE__);
 
         rtr_clean_rtr_info(&rtr_info, true);
 
@@ -3589,13 +3589,13 @@ static void row_merge_write_redo(const dict_index_t *index) {
   byte *log_ptr;
 
   ut_ad(!index->table->is_temporary());
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   log_ptr = mlog_open(&mtr, 11 + 8);
   log_ptr = mlog_write_initial_log_record_low(MLOG_INDEX_LOAD, index->space,
                                               index->page, log_ptr, &mtr);
   mach_write_to_8(log_ptr, index->id);
   mlog_close(&mtr, log_ptr + 8);
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 }
 
 /** Build indexes on a table by reading a clustered index, creating a temporary

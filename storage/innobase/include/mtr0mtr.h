@@ -47,16 +47,16 @@ this program; if not, write to the Free Software Foundation, Inc.,
 #include "trx0types.h"
 
 /** Start a mini-transaction. */
-#define mtr_start(m) (m)->start()
+#define mtr_start(m) (m)->start(__func__, __FILE__, __LINE__)
 
 /** Start a synchronous mini-transaction */
-#define mtr_start_sync(m) (m)->start(true)
+#define mtr_start_sync(m) (m)->start(__func__, __FILE__, __LINE__, true)
 
 /** Start an asynchronous read-only mini-transaction */
-#define mtr_start_ro(m) (m)->start(true, true)
+#define mtr_start_ro(m) (m)->start(__func__, __FILE__, __LINE__,true, true)
 
 /** Commit a mini-transaction. */
-#define mtr_commit(m) (m)->commit()
+#define mtr_commit(m) (m)->commit(__func__, __FILE__, __LINE__)
 
 /** Set and return a savepoint in mtr.
 @return	savepoint */
@@ -227,7 +227,7 @@ struct mtr_t {
   /** Start a mini-transaction.
   @param sync		true if it is a synchronous mini-transaction
   @param read_only	true if read only mini-transaction */
-  void start(bool sync = true, bool read_only = false);
+  void start(const char *src_func, const char *src_file, uint src_line, bool sync = true, bool read_only = false);
 
   /** @return whether this is an asynchronous mini-transaction. */
   bool is_async() const { return (!m_sync); }
@@ -236,7 +236,7 @@ struct mtr_t {
   void set_sync() { m_sync = true; }
 
   /** Commit the mini-transaction. */
-  void commit();
+  void commit(const char *src_func, const char *src_file, uint src_line);
 
   /** Return current size of the buffer.
   @return	savepoint */

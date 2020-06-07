@@ -1194,20 +1194,20 @@ static void clone_update_recovery_status(bool finished, bool is_error,
   }
 
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   byte *binlog_pos = trx_sysf_get(&mtr) + TRX_SYS_MYSQL_LOG_INFO;
 
   /* Check logfile magic number. */
   if (mach_read_from_4(binlog_pos + TRX_SYS_MYSQL_LOG_MAGIC_N_FLD) !=
       TRX_SYS_MYSQL_LOG_MAGIC_N) {
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
     status_file.close();
     return;
   }
   /* Write binary log file name. */
   status_file << binlog_pos + TRX_SYS_MYSQL_LOG_NAME << std::endl;
   if (!status_file.good()) {
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
     status_file.close();
     return;
   }
@@ -1222,7 +1222,7 @@ static void clone_update_recovery_status(bool finished, bool is_error,
   /* Write log file offset. */
   status_file << log_offset << std::endl;
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
   status_file.close();
   /* Set clone startup for GR, only during replace. */
   clone_startup = is_replace;

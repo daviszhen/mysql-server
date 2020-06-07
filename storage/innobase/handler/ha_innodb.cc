@@ -4845,11 +4845,11 @@ static bool dd_create_hardcoded(space_id_t space_id, const char *filename) {
 
   if (err == DB_SUCCESS) {
     mtr_t mtr;
-    mtr.start();
+    mtr.start(__func__, __FILE__, __LINE__);
 
     bool ret = fsp_header_init(space_id, pages, &mtr, true);
 
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
 
     if (ret) {
       btr_sdi_create_index(space_id, false);
@@ -19521,7 +19521,7 @@ static void innodb_make_page_dirty(
     return;
   }
 
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   buf_block_t *block =
       buf_page_get(page_id_t(space_id, srv_saved_page_number_debug),
@@ -19537,7 +19537,7 @@ static void innodb_make_page_dirty(
     mlog_write_ulint(page + FIL_PAGE_TYPE, fil_page_get_type(page), MLOG_2BYTES,
                      &mtr);
   }
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
   fil_space_release(space);
 }
 #endif  // UNIV_DEBUG

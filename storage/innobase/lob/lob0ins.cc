@@ -49,7 +49,7 @@ buf_block_t *BaseInserter::alloc_blob_page() {
 
   if (!fsp_reserve_free_extents(&r_extents, m_ctx->space(), 1, FSP_BLOB,
                                 alloc_mtr, 1)) {
-    alloc_mtr->commit();
+    alloc_mtr->commit(__func__, __FILE__, __LINE__);
     m_err = DB_OUT_OF_FILE_SPACE;
     return (NULL);
   }
@@ -60,7 +60,7 @@ buf_block_t *BaseInserter::alloc_blob_page() {
   fil_space_release_free_extents(m_ctx->space(), r_extents);
 
   if (m_ctx->is_bulk()) {
-    alloc_mtr->commit();
+    alloc_mtr->commit(__func__, __FILE__, __LINE__);
   }
 
   m_cur_blob_page_no = page_get_page_no(buf_block_get_frame(m_cur_blob_block));
@@ -205,7 +205,7 @@ dberr_t Inserter::write_first_page(size_t blob_j, big_rec_field_t &field) {
 
   m_prev_page_no = m_cur_blob_page_no;
 
-  mtr->commit();
+  mtr->commit(__func__, __FILE__, __LINE__);
 
   return (m_err);
 }
@@ -234,7 +234,7 @@ dberr_t Inserter::write_single_blob_page(size_t blob_j, big_rec_field_t &field,
   ref_t blobref(field_ref);
   blobref.set_length(field.len - m_remaining, mtr);
   m_prev_page_no = m_cur_blob_page_no;
-  mtr->commit();
+  mtr->commit(__func__, __FILE__, __LINE__);
 
   return (m_err);
 }

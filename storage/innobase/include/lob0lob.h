@@ -874,13 +874,13 @@ class BtrContext {
 
   /** Commit the mini transaction that is holding the latches
   of the clustered index record block. */
-  void commit_btr_mtr() { m_mtr->commit(); }
+  void commit_btr_mtr() { m_mtr->commit(__func__, __FILE__, __LINE__); }
 
   /** Start the mini transaction that will be holding the latches
   of the clustered index record block. */
   void start_btr_mtr() {
     mtr_log_t log_mode = m_mtr->get_log_mode();
-    m_mtr->start();
+    m_mtr->start(__func__, __FILE__, __LINE__);
     m_mtr->set_log_mode(log_mode);
   }
 

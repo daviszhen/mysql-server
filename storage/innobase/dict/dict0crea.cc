@@ -718,7 +718,7 @@ dict_index_t *dict_sdi_create_idx_in_mem(space_id_t space, bool space_discarded,
   methods */
   if (!space_discarded && !is_create) {
     mtr_t mtr;
-    mtr.start();
+    mtr.start(__func__, __FILE__, __LINE__);
 
     index_root_page_num =
         fsp_sdi_get_root_page_num(space, page_size_t(flags), &mtr);

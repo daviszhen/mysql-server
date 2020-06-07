@@ -4942,11 +4942,11 @@ dberr_t Fil_shard::space_rename(space_id_t space_id, const char *old_path,
   if (!recv_recovery_on) {
     mtr_t mtr;
 
-    mtr.start();
+    mtr.start(__func__, __FILE__, __LINE__);
 
     fil_name_write_rename(space_id, old_file_name, new_file_name, &mtr);
 
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
   }
 #endif /* !UNIV_HOTBACKUP */
 

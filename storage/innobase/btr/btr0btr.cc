@@ -1033,7 +1033,7 @@ void btr_free_if_exists(const page_id_t &page_id, const page_size_t &page_size,
 @param[in]	page_size	page size */
 void btr_free(const page_id_t &page_id, const page_size_t &page_size) {
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   mtr.set_log_mode(MTR_LOG_NO_REDO);
 
   buf_block_t *block = buf_page_get(page_id, page_size, RW_X_LATCH, &mtr);
@@ -1042,7 +1042,7 @@ void btr_free(const page_id_t &page_id, const page_size_t &page_size) {
 
   btr_free_but_not_root(block, MTR_LOG_NO_REDO);
   btr_free_root(block, &mtr);
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 }
 
 /** Truncate an index tree. We just free all except the root.
@@ -1068,7 +1068,7 @@ void btr_truncate(const dict_index_t *index) {
   mtr_t mtr;
   buf_block_t *block;
 
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   mtr_x_lock(&space->latch, &mtr);
 
@@ -1082,9 +1082,9 @@ void btr_truncate(const dict_index_t *index) {
   index. */
   mlog_write_ull(page + (PAGE_HEADER + PAGE_MAX_TRX_ID), IB_ID_MAX, &mtr);
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   block = buf_page_get(page_id, page_size, RW_X_LATCH, &mtr);
 
@@ -1096,7 +1096,7 @@ void btr_truncate(const dict_index_t *index) {
   page_create(block, &mtr, dict_table_is_comp(index->table), false);
   ut_ad(buf_block_get_frame(block) + (PAGE_HEADER + PAGE_MAX_TRX_ID) == 0);
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   rw_lock_x_unlock(&space->latch);
 
@@ -1123,7 +1123,7 @@ void btr_truncate_recover(const dict_index_t *index) {
   mtr_t mtr;
   buf_block_t *block;
 
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   block = buf_page_get(page_id, page_size, RW_X_LATCH, &mtr);
 
@@ -1132,7 +1132,7 @@ void btr_truncate_recover(const dict_index_t *index) {
   trx_id_t trx_id = page_get_max_trx_id(page);
   ut_ad(trx_id == 0 || trx_id == IB_ID_MAX);
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   fil_space_release(space);
 
@@ -4701,7 +4701,7 @@ dberr_t btr_sdi_create_index(space_id_t space_id, bool dict_locked) {
   ut_ad(sdi_table != NULL);
 
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   const page_size_t page_size = page_size_t(space->flags);
 
@@ -4713,7 +4713,7 @@ dberr_t btr_sdi_create_index(space_id_t space_id, bool dict_locked) {
     ib::error(ER_IB_MSG_43) << "Unable to create root index page"
                                " for SDI table "
                             << " in tablespace " << space_id;
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
     dict_sdi_remove_from_cache(space_id, sdi_table, dict_locked);
     fil_space_release(space);
     return (DB_ERROR);
@@ -4742,7 +4742,7 @@ dberr_t btr_sdi_create_index(space_id_t space_id, bool dict_locked) {
   mlog_write_ulint(FSP_HEADER_OFFSET + FSP_SPACE_FLAGS + page, fsp_flags,
                    MLOG_4BYTES, &mtr);
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   fil_space_set_flags(space, fsp_flags);
 

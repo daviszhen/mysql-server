@@ -3983,7 +3983,7 @@ MetadataRecover *recv_recovery_from_checkpoint_finish(log_t &log,
     by older versions of MySQL. */
     mtr_t mtr;
 
-    mtr.start();
+    mtr.start(__func__, __FILE__, __LINE__);
 
     buf_block_t *block;
 
@@ -4013,7 +4013,7 @@ MetadataRecover *recv_recovery_from_checkpoint_finish(log_t &log,
 
     fil_block_check_type(block, FIL_PAGE_TYPE_SYS, &mtr);
 
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
   }
 
   /* Free up the flush_rbt. */

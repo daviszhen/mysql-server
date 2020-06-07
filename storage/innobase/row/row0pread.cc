@@ -258,12 +258,12 @@ void PCursor::yield() {
 
   m_pcur->store_position(m_mtr);
 
-  m_mtr->commit();
+  m_mtr->commit(__func__, __FILE__, __LINE__);
 
   /* Yield so that another thread can proceed. */
   os_thread_yield();
 
-  m_mtr->start();
+  m_mtr->start(__func__, __FILE__, __LINE__);
 
   m_mtr->set_log_mode(MTR_LOG_NO_REDO);
 
@@ -300,7 +300,7 @@ dberr_t PCursor::move_to_next_block(dict_index_t *index) {
   auto next_page_no = btr_page_get_next(page_cur_get_page(cur), m_mtr);
 
   if (next_page_no == FIL_NULL) {
-    m_mtr->commit();
+    m_mtr->commit(__func__, __FILE__, __LINE__);
     return (DB_END_OF_INDEX);
   }
 
@@ -503,7 +503,7 @@ dberr_t Parallel_reader::Ctx::traverse() {
   }
 
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   mtr.set_log_mode(MTR_LOG_NO_REDO);
 
   auto &from = m_range.first;
@@ -516,7 +516,7 @@ dberr_t Parallel_reader::Ctx::traverse() {
   err = traverse_recs(&pcursor, &mtr);
 
   if (mtr.is_active()) {
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
   }
 
   if (m_scan_ctx->m_config.m_read_level != 0) {
@@ -958,7 +958,7 @@ dberr_t Parallel_reader::Scan_ctx::partition(
   ut_ad(index_s_own());
 
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   mtr.set_log_mode(MTR_LOG_NO_REDO);
 
   dberr_t err{DB_SUCCESS};
@@ -981,7 +981,7 @@ dberr_t Parallel_reader::Scan_ctx::partition(
     }
   }
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   return (err);
 }

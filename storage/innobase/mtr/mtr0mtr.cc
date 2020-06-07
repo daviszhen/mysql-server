@@ -419,10 +419,12 @@ struct mtr_write_log_t {
 /** Start a mini-transaction.
 @param sync		true if it is a synchronous mini-transaction
 @param read_only	true if read only mini-transaction */
-void mtr_t::start(bool sync, bool read_only) {
+void mtr_t::start(const char *src_func, const char *src_file, uint src_line, bool sync, bool read_only) {
   UNIV_MEM_INVALID(this, sizeof(*this));
 
   UNIV_MEM_INVALID(&m_impl, sizeof(m_impl));
+
+	printf("mtr_t::start %s : %s : %u \n", src_func, src_file, src_line);
 
   m_sync = sync;
 
@@ -468,7 +470,7 @@ void mtr_t::Command::release_resources() {
 }
 
 /** Commit a mini-transaction. */
-void mtr_t::commit() {
+void mtr_t::commit(const char *src_func, const char *src_file, uint src_line) {
   ut_ad(is_active());
   ut_ad(!is_inside_ibuf());
   ut_ad(m_impl.m_magic_n == MTR_MAGIC_N);
@@ -487,6 +489,7 @@ void mtr_t::commit() {
     cmd.release_all();
     cmd.release_resources();
   }
+  printf("mtr_t::commit %s : %s : %u \n",src_func,src_file,src_line);
 }
 
 #ifndef UNIV_HOTBACKUP

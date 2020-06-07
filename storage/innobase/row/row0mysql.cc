@@ -2473,12 +2473,12 @@ void row_delete_all_rows(dict_table_t *table) {
 
     mtr_t mtr;
 
-    mtr.start();
+    mtr.start(__func__, __FILE__, __LINE__);
     mtr.set_log_mode(MTR_LOG_NO_REDO);
     index->page = btr_create(index->type, index->space, page_size, index->id,
                              index, &mtr);
     ut_ad(index->page != FIL_NULL);
-    mtr.commit();
+    mtr.commit(__func__, __FILE__, __LINE__);
   }
 }
 

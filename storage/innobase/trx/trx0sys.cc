@@ -115,13 +115,13 @@ void trx_sys_flush_max_trx_id(void) {
 
 void trx_sys_persist_gtid_num(trx_id_t gtid_trx_no) {
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   auto sys_header = trx_sysf_get(&mtr);
   auto page = sys_header - TRX_SYS;
   /* Update GTID transaction number. All transactions with lower
   transaction number are no longer processed for GTID. */
   mlog_write_ull(page + TRX_SYS_TRX_NUM_GTID, gtid_trx_no, &mtr);
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 }
 
 trx_id_t trx_sys_oldest_trx_no() {
@@ -311,13 +311,13 @@ void trx_sys_update_mysql_binlog_offset(trx_t *trx, mtr_t *mtr) {
 page_no_t trx_sysf_rseg_find_page_no(ulint rseg_id) {
   page_no_t page_no;
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   trx_sysf_t *sys_header = trx_sysf_get(&mtr);
 
   page_no = trx_sysf_rseg_get_page_no(sys_header, rseg_id, &mtr);
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   return (page_no);
 }
@@ -436,7 +436,7 @@ purge_pq_t *trx_sys_init_at_db_start(void) {
   the database is repeatedly started! */
 
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
 
   sys_header = trx_sysf_get(&mtr);
 
@@ -445,7 +445,7 @@ purge_pq_t *trx_sys_init_at_db_start(void) {
       ut_uint64_align_up(mach_read_from_8(sys_header + TRX_SYS_TRX_ID_STORE),
                          TRX_SYS_TRX_ID_WRITE_MARGIN);
 
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
 #ifdef UNIV_DEBUG
   /* max_trx_id is the next transaction ID to assign. Initialize maximum

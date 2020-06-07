@@ -3871,7 +3871,7 @@ dberr_t row_import_for_mysql(dict_table_t *table, dd::Table *table_def,
   /* Check if the on-disk .ibd file doesn't have SDI index.
   If it doesn't exist, create SDI Index page now. */
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   buf_block_t *block =
       buf_page_get(page_id_t(table->space, 0), dict_table_page_size(table),
                    RW_SX_LATCH, &mtr);
@@ -3882,7 +3882,7 @@ dberr_t row_import_for_mysql(dict_table_t *table, dd::Table *table_def,
 
   ulint space_flags_from_disk =
       mach_read_from_4(page + FSP_HEADER_OFFSET + FSP_SPACE_FLAGS);
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 
   if (!FSP_FLAGS_HAS_SDI(space_flags_from_disk)) {
     /* This is IMPORT from 5.7 .ibd file or pre 8.0.1 */

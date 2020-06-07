@@ -3975,10 +3975,10 @@ dberr_t fsp_has_sdi(space_id_t space_id) {
 
 #ifdef UNIV_DEBUG
   mtr_t mtr;
-  mtr.start();
+  mtr.start(__func__, __FILE__, __LINE__);
   ut_ad(fsp_sdi_get_root_page_num(space_id, page_size_t(space->flags), &mtr) !=
         0);
-  mtr.commit();
+  mtr.commit(__func__, __FILE__, __LINE__);
 #endif /* UNIV_DEBUG */
 
   fil_space_release(space);
